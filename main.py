@@ -5,6 +5,13 @@ from random import random, randint
 # Show a text label on each sprite
 DEBUG = 0
  
+class Background(pygame.sprite.Sprite):
+    def __init__(self, image_file, location):
+        pygame.sprite.Sprite.__init__(self)  #call Sprite initializer
+        self.image = pygame.image.load(image_file)
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = location
+
 class Game:
     """Creates background, starts running code"""
     SPRITE_FOLDER = 'sprites/'
@@ -29,10 +36,11 @@ class Game:
     def start(self):
         # Add a bunch of enemies once on startup
         self.player.add_enemies(alien_count=10, gargoyle_count=10)
+        hit = 0
         while True:
-            hit = 0
             if self.frames_drawn % 100 == 0:
-                self.player.add_enemies(alien_count=1, gargoyle_count=1)
+                if hit == 0:
+                    self.player.add_enemies(alien_count=1, gargoyle_count=1)
             self.frames_drawn += 1
             start_time = time.time()
             self.draw()
@@ -48,22 +56,19 @@ class Game:
                         self.score += 1
                     if enemy.rect.colliderect(self.player.rect): 
                         hit += 1
- 
             # PLAYER ENEMY COLLISIONS / GAME OVER
             for enemy in Player.enemies:
                 if enemy.rect.colliderect(self.player.rect): hit += 1
             if hit >= 1: 
                 # Game Over Screen
                 self.background_color = (255, 0, 0)
-
-			# if len(Player.enemies) < 1:
-            
+                bg = pygame.image.load(Game.SPRITE_FOLDER + "Game Over Screens/Go1.png")
+                bg =  pygame.transform.scale(bg, (Game.WIDTH, Game.HEIGHT))
+                Game.surface.blit(bg, [0,0])
             # Draw all enemies of the Player
             for enemy in Player.enemies:
                 enemy.draw()
             if DEBUG: self.draw_debug_labels(1/(time.time() - start_time))      
-        # GAME OVER SCREEN
-        self.draw()
  
     def draw_debug_labels(self, FPS):
         """Draws FPS (like print but on the screen)"""

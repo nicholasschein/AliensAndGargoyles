@@ -4,7 +4,7 @@ from random import random, randint
  
 # Show a text label on each sprite
 DEBUG = 0
- 
+
 class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
         pygame.sprite.Sprite.__init__(self)  #call Sprite initializer
@@ -28,12 +28,15 @@ class Game:
         self.frames_drawn = 0
         self.player = Player("player", Game.SPRITE_FOLDER + "BattleBus.png", self.WIDTH - 160, self.HEIGHT - 140, 160, 140)
         self.start()
- 
-    def remove_all_sprites(self, enemies):
-            for enemy in enemies:
-                    enemies.remove(enemy)
-                    
+        self.start1 += 1
+        
     def start(self):
+        bg = pygame.image.load(Game.SPRITE_FOLDER + "Aliens.png")
+        bg =  pygame.transform.scale(bg, (Game.WIDTH, Game.HEIGHT))
+        Game.surface.blit(bg, [0,0])
+        if self.start1 == 1 and pygame.key.get_focused() == True:
+            self.start2()
+    def start2(self):
         # Add a bunch of enemies once on startup
         self.player.add_enemies(alien_count=10, gargoyle_count=10)
         hit = 0
@@ -61,17 +64,20 @@ class Game:
                 if enemy.rect.colliderect(self.player.rect): hit += 1
             if hit >= 1: 
                 # Game Over Screen
-                self.background_color = (255, 0, 0)
+                """self.background_color = (255, 0, 0)"""
                 bg = pygame.image.load(Game.SPRITE_FOLDER + "Game Over Screens/Go1.png")
                 bg =  pygame.transform.scale(bg, (Game.WIDTH, Game.HEIGHT))
                 Game.surface.blit(bg, [0,0])
+                # Clear Sprites from Screen
+                for enemy in Player.enemies:
+                    Player.enemies.remove(enemy)      
             # Draw all enemies of the Player
             for enemy in Player.enemies:
                 enemy.draw()
             if DEBUG: self.draw_debug_labels(1/(time.time() - start_time))      
  
     def draw_debug_labels(self, FPS):
-        """Draws FPS (like print but on the screen)"""
+        # Draws FPS (like print but on the screen)
         FPS_label = Game.debug_font.render('FPS: %s' % (int(FPS)), 1, (255, 255, 0))
         Game.surface.blit(FPS_label, (0, 0))
         frames_drawn_label = Game.debug_font.render('Frame#: %s' % (self.frames_drawn), 1, (255, 255, 0))

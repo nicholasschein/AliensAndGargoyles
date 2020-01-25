@@ -1,4 +1,5 @@
 import sys, time, pygame, gc
+import keyboard  # using module keyboard
 from decimal import Decimal
 from random import random, randint
  
@@ -28,14 +29,25 @@ class Game:
         self.frames_drawn = 0
         self.player = Player("player", Game.SPRITE_FOLDER + "BattleBus.png", self.WIDTH - 160, self.HEIGHT - 140, 160, 140)
         self.start()
-        self.start1 += 1
         
     def start(self):
         bg = pygame.image.load(Game.SPRITE_FOLDER + "Aliens.png")
         bg =  pygame.transform.scale(bg, (Game.WIDTH, Game.HEIGHT))
         Game.surface.blit(bg, [0,0])
-        if self.start1 == 1 and pygame.key.get_focused() == True:
-            self.start2()
+        self.draw()
+        # CHANGE FOR JUST ENTER/SPACE
+        while True:
+            i=0
+            for i in range(32,64,1):
+                if keyboard.is_pressed(i):
+                        self.start2()
+                        i+=1
+            for i in range(97,123,1):
+                if keyboard.is_pressed(i):
+                        self.start2()
+                        i+=1
+            if i > 0:
+                break
     def start2(self):
         # Add a bunch of enemies once on startup
         self.player.add_enemies(alien_count=10, gargoyle_count=10)
@@ -64,7 +76,7 @@ class Game:
                 if enemy.rect.colliderect(self.player.rect): hit += 1
             if hit >= 1: 
                 # Game Over Screen
-                """self.background_color = (255, 0, 0)"""
+                self.background_color = (255, 0, 0)
                 bg = pygame.image.load(Game.SPRITE_FOLDER + "Game Over Screens/Go1.png")
                 bg =  pygame.transform.scale(bg, (Game.WIDTH, Game.HEIGHT))
                 Game.surface.blit(bg, [0,0])
@@ -130,7 +142,7 @@ class Sprite:
         if DEBUG: self.draw_debug_labels()
     
     def draw_debug_labels(self):
-        """Draws debug info (like print but on the screen)"""
+        #Draws debug info (like print but on the screen)
         TWOPLACES = Decimal(10) ** -2
         x = Decimal(self.x).quantize(TWOPLACES)
         y = Decimal(self.y).quantize(TWOPLACES)
@@ -246,6 +258,7 @@ class Bullet(Sprite):
     def hit(self):
         pass
  
+
 if __name__ == "__main__":
     game = Game()
     print("File is being run directly")
